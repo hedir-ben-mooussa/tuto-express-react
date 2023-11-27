@@ -18,9 +18,9 @@ db.configserverdb
     console.log("err", err);
   });
 
-app.get("/welcome", (req, res) => {
-  res.status(200).send("welcome to our first backend with expressjs");
-});
+// app.get("/welcome", (req, res) => {
+ // res.status(200).send("welcome to our first backend with expressjs");
+//});
 
 app.get("/getbyid/:id", async (req, res) => {
   const id = req.params.id;
@@ -41,9 +41,22 @@ app.get("/getall", async (req, res) => {
   }
 });
 
-app.put("/update/:id", (req, res) => {
+app.put("/update/:id", async(req, res) => {
   const id = req.params.id;
-  res.status(200).send(`update ${id}`);
+  const user = await User.update({
+username : 'test'
+  },{
+    where : {
+      id : `${id}`
+    }
+  }
+ )
+ .then(() => {
+  res.status(201).send("user updated");
+})
+.catch((err) => {
+  res.status(500).send("server error :", err);
+});
 });
 
 app.post("/add", async (req, res) => {
@@ -63,9 +76,19 @@ app.post("/add", async (req, res) => {
     });
 });
 
-app.delete("/delete/:id", (req, res) => {
+app.delete("/delete/:id", async(req, res) => {
   const id = req.params.id;
-  res.status(200).send(`delete ${id}`);
+  const user = await User.destroy ( {
+    where : {
+      id : `${id}`
+    }
+  })
+  .then(() => {
+    res.status(200).send(`deleted ${id}`);
+  })
+  .catch((err) => {
+    res.status(500).send("server error :", err);
+  });
 });
 
 app.listen(3001, () => {
